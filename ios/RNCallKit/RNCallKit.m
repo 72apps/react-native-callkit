@@ -419,6 +419,14 @@ continueUserActivity:(NSUserActivity *)userActivity
     [self.callKitProvider reportOutgoingCallWithUUID:action.callUUID startedConnectingAtDate:[NSDate date]];
     [self configureAudioSession];
     [action fulfill];
+
+    // Update the localizedCallerName, so that the call appears with the correct name in the 
+    // recent call list.
+    if(action.contactIdentifier) {
+        CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
+        callUpdate.localizedCallerName = action.contactIdentifier;
+        [self.callKitProvider reportCallWithUUID:action.callUUID updated:callUpdate];
+    }
 }
 
 // Answering incoming call
